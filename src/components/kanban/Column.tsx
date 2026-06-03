@@ -4,16 +4,21 @@ import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import type { Application, ApplicationStage } from "@/lib/types";
 import { STAGE_CONFIG } from "@/lib/stages";
-import { getCompanyName } from "@/lib/mock-data";
 import { Card } from "./Card";
 import { cn } from "@/lib/utils";
 
 interface ColumnProps {
   stage: ApplicationStage;
   applications: Application[];
+  /**
+   * Lookup for the company name displayed at the top of each card.
+   * Injected by the Board so the column doesn't need to know whether the
+   * data came from mock-data or the DB.
+   */
+  getCompanyName: (companyId: string) => string;
 }
 
-export function Column({ stage, applications }: ColumnProps) {
+export function Column({ stage, applications, getCompanyName }: ColumnProps) {
   const config = STAGE_CONFIG[stage];
 
   // Droppable for empty-column case. When a column has zero cards there's no
