@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "crons": [
+    {
+      "path": "/api/cron/poll-gmail",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/refresh-companies",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}
