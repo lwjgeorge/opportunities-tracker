@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: typecheck / lint / test / build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      # Placeholder so `next build` doesn't blow up on missing DATABASE_URL.
+      # Real DB access happens at runtime on Vercel, not at build time.
+      DATABASE_URL: postgresql://placeholder:placeholder@localhost/placeholder
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.4.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('**/*.[jt]s', '**/*.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        if: ${{ hashFiles('vitest.config.ts', 'vitest.config.mts', 'vitest.config.js', 'vitest.config.mjs') != '' }}
+        run: pnpm test --run
+
+      - name: Build
+        run: pnpm build
