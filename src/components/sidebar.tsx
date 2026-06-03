@@ -26,7 +26,11 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  userSlot: React.ReactNode;
+}
+
+export function Sidebar({ userSlot }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -63,19 +67,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t border-border px-5 py-4">
-        <div className="flex items-center gap-2.5">
-          <div className="grid h-7 w-7 place-items-center rounded-full bg-surface-elevated text-xs font-medium text-foreground">
-            L
-          </div>
-          <div className="flex flex-col leading-tight">
-            <span className="text-xs font-medium text-foreground">Lucas</span>
-            <span className="text-[11px] text-foreground-subtle">
-              Single-user mode
-            </span>
-          </div>
-        </div>
-      </div>
+      {userSlot}
     </aside>
   );
 }
