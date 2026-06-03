@@ -25,6 +25,12 @@ export default auth((req) => {
 
   if (isPublic) return NextResponse.next();
 
+  // Dev bypass: skip the auth gate entirely when AUTH_BYPASS=1 is set in the
+  // environment. Used for local visual verification without setting up a real
+  // GitHub OAuth app. Must NEVER be set in production — Vercel env vars
+  // explicitly leave it unset there.
+  if (process.env.AUTH_BYPASS === "1") return NextResponse.next();
+
   if (!req.auth) {
     const signInUrl = new URL("/sign-in", nextUrl);
     return NextResponse.redirect(signInUrl);
