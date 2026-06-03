@@ -1,5 +1,8 @@
+import { desc, eq } from "drizzle-orm";
 import { google, type gmail_v1 } from "googleapis";
 
+import { db } from "@/db";
+import { oauthTokens } from "@/db/oauth-schema";
 import type {
   Allowlist,
   EmailProvider,
@@ -46,21 +49,45 @@ type RequiredGoogleEnv = {
   refreshToken: string;
 };
 
-function readGoogleEnv(): RequiredGoogleEnv {
+/**
+ * Fetch the latest persisted Google refresh token, if a user has connected
+ * via the in-app OAuth flow. Returns null when no row exists; the caller
+ * falls back to `GOOGLE_REFRESH_TOKEN` from the environment.
+ *
+ * "Latest" is by `updated_at desc` — the OAuth callback bumps that column on
+ * every upsert, so the most recently connected account wins.
+ */
+async function loadPersistedRefreshToken(): Promise<string | null> {
+  const rows = await db
+    .select({ refreshToken: oauthTokens.refreshToken })
+    .from(oauthTokens)
+    .where(eq(oauthTokens.provider, "google"))
+    .orderBy(desc(oauthTokens.updatedAt))
+    .limit(1);
+  const first = rows[0];
+  return first ? first.refreshToken : null;
+}
+
+async function readGoogleEnv(): Promise<RequiredGoogleEnv> {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+
+  // Prefer the DB-persisted refresh token (set via /settings/email). Fall
+  // back to GOOGLE_REFRESH_TOKEN so early-stage / local dev still works
+  // before anyone has clicked Connect.
+  const persisted = await loadPersistedRefreshToken();
+  const refreshToken = persisted ?? process.env.GOOGLE_REFRESH_TOKEN;
 
   // Runtime failure (per scope brief) — do NOT do this at module top level,
   // otherwise `next build` evaluates this file and the build breaks on a CI
   // box without these secrets.
   if (!clientId || !clientSecret || !refreshToken) {
     throw new Error(
-      "Gmail provider missing env vars: " +
+      "Gmail provider missing credentials: " +
         [
           !clientId && "GOOGLE_CLIENT_ID",
           !clientSecret && "GOOGLE_CLIENT_SECRET",
-          !refreshToken && "GOOGLE_REFRESH_TOKEN",
+          !refreshToken && "refresh token (connect Gmail in /settings/email or set GOOGLE_REFRESH_TOKEN)",
         ]
           .filter(Boolean)
           .join(", "),
@@ -166,9 +193,13 @@ function toFetchedMessage(msg: gmail_v1.Schema$Message): FetchedMessage {
  * Lazily construct the OAuth2 client and bind it to the Gmail API. We do
  * this inside the factory (not at module load) so `next build` works on a
  * machine without Google secrets.
+ *
+ * Async because resolving the refresh token may hit the DB (see
+ * `loadPersistedRefreshToken`). The provider memoises the result so the
+ * lookup happens at most once per request.
  */
-function buildGmailClient(): gmail_v1.Gmail {
-  const env = readGoogleEnv();
+async function buildGmailClient(): Promise<gmail_v1.Gmail> {
+  const env = await readGoogleEnv();
   const oauth2 = new google.auth.OAuth2(env.clientId, env.clientSecret);
   oauth2.setCredentials({ refresh_token: env.refreshToken });
   return google.gmail({ version: "v1", auth: oauth2 });
@@ -176,15 +207,16 @@ function buildGmailClient(): gmail_v1.Gmail {
 
 export function createGmailProvider(): EmailProvider {
   // Memoise the client across calls within the same request, but build it
-  // lazily on first use.
-  let gmailClient: gmail_v1.Gmail | null = null;
-  const client = (): gmail_v1.Gmail => {
+  // lazily on first use. Stored as a promise so concurrent callers share the
+  // in-flight build instead of triggering two parallel DB lookups.
+  let gmailClient: Promise<gmail_v1.Gmail> | null = null;
+  const client = (): Promise<gmail_v1.Gmail> => {
     if (!gmailClient) gmailClient = buildGmailClient();
     return gmailClient;
   };
 
   async function getMessage(id: string): Promise<FetchedMessage> {
-    const res = await client().users.messages.get({
+    const res = await (await client()).users.messages.get({
       userId: "me",
       id,
       format: DEFAULT_GET_FORMAT,
@@ -206,7 +238,7 @@ export function createGmailProvider(): EmailProvider {
     // recent-window query + DB unique-index dedupe.
     const q = `${fromQuery} ${DEFAULT_RECENT_WINDOW}`;
 
-    const listRes = await client().users.messages.list({
+    const listRes = await (await client()).users.messages.list({
       userId: "me",
       q,
       maxResults: MAX_MESSAGES_PER_POLL,

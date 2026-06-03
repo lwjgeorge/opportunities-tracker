@@ -15,6 +15,13 @@
       "when": 1780446979189,
       "tag": "0001_daily_sugar_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780447568194,
+      "tag": "0002_round_smiling_tiger",
+      "breakpoints": true
     }
   ]
 }

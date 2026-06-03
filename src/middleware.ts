@@ -16,7 +16,12 @@ export default auth((req) => {
   const isPublic =
     pathname === "/sign-in" ||
     pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/api/cron");
+    pathname.startsWith("/api/cron") ||
+    // OAuth handshake routes are stateless: the start route stamps a signed
+    // state cookie and the callback verifies it. They predate the user
+    // session for the provider being connected, so the app-session gate
+    // would block them.
+    pathname.startsWith("/api/oauth");
 
   if (isPublic) return NextResponse.next();
 
