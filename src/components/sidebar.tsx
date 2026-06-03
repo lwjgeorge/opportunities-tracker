@@ -6,6 +6,7 @@ import {
   Briefcase,
   Building2,
   Users,
+  Network,
   Mail,
   Settings,
   type LucideIcon,
@@ -22,6 +23,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/applications", label: "Applications", icon: Briefcase },
   { href: "/companies", label: "Companies", icon: Building2 },
   { href: "/contacts", label: "Contacts", icon: Users },
+  { href: "/relationships", label: "Relationships", icon: Network },
   { href: "/email-allowlist", label: "Email allowlist", icon: Mail },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
