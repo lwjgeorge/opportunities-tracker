@@ -9,7 +9,13 @@
  * The actual fixture data lives in {@link ./seed-data.ts} so tests can
  * exercise it without standing up Postgres.
  */
-import "dotenv/config";
+import { config as loadEnv } from "dotenv";
+
+// Match drizzle.config.ts: prefer .env.local (Next convention), fall back to
+// .env. Using "dotenv/config" alone would only read .env and miss the
+// connection string the rest of the toolchain expects.
+loadEnv({ path: ".env.local" });
+loadEnv({ path: ".env" });
 
 import { eq } from "drizzle-orm";
 
