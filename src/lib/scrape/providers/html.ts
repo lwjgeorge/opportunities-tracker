@@ -222,7 +222,7 @@ async function fetchWithCaps(url: string): Promise<FetchOutcome> {
  * Returns `true` if `targetPath` is allowed, `false` if any matching group
  * disallows it. Empty/missing rules => allowed.
  */
-function isAllowedByRobots(
+export function isAllowedByRobots(
   robotsTxt: string,
   ourAgentToken: string,
   targetPath: string,
@@ -346,7 +346,7 @@ function dedupeStrings(values: Iterable<string>): string[] {
   return out;
 }
 
-function extract(html: string, baseUrl: string): Extracted {
+export function extract(html: string, baseUrl: string): Extracted {
   const $ = cheerio.load(html);
 
   const titleTag = $("title").first().text().trim() || null;

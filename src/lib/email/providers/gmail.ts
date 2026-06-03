@@ -80,7 +80,7 @@ function readGoogleEnv(): RequiredGoogleEnv {
  *   - `from:recruiter@example.com` matches an exact address.
  *   - `from:(a OR b OR c)` groups alternatives.
  */
-function buildFromQuery(allowlist: Allowlist): string | null {
+export function buildFromQuery(allowlist: Allowlist): string | null {
   const domainTerms = allowlist.domains
     .map((d) => d.trim().toLowerCase())
     .filter((d) => d.length > 0)
