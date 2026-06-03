@@ -8,6 +8,13 @@
       "when": 1780446334590,
       "tag": "0000_glamorous_shocker",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1780446979189,
+      "tag": "0001_daily_sugar_man",
+      "breakpoints": true
     }
   ]
 }

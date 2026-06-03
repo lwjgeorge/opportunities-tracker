@@ -8,7 +8,8 @@ loadEnv({ path: ".env.local" });
 loadEnv({ path: ".env" });
 
 export default defineConfig({
-  schema: "./src/db/schema.ts",
+  // Both files contribute tables; drizzle-kit unions them into one migration.
+  schema: ["./src/db/schema.ts", "./src/db/scrapes-schema.ts"],
   out: "./migrations",
   dialect: "postgresql",
   dbCredentials: {
