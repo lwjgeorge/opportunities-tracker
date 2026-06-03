@@ -1,0 +1,37 @@
+{
+  "name": "warm-intro",
+  "description": "A friend introduces Lucas to a hiring manager. The 'introduced_by' relationship is the headline; no stage signal yet because nothing has been applied for.",
+  "input": {
+    "sender": "sam.alvarez@protonmail.com",
+    "subject": "intro: Lucas <> Diego (Neon)",
+    "bodyText": "Hey both,\n\nQuick intro — Lucas, meet Diego Aguilar. Diego runs the Postgres serverless team at Neon and is hiring senior backend folks. Lucas, you'd hit it off; Diego is super sharp on storage internals and you've been hacking on consensus protocols for years.\n\nDiego, Lucas was at Cloudflare for 4 years on the durable objects team and is exploring what's next. He's mostly looking at distributed-systems-heavy roles in EU timezones.\n\nI'll let you two take it from here.\n\nCheers,\nSam",
+    "sentAt": "2026-05-28T19:30:00Z"
+  },
+  "expected": {
+    "people": [
+      { "name": "Sam Alvarez", "email": "sam.alvarez@protonmail.com" },
+      { "name": "Diego Aguilar", "company": "Neon", "role": "Head of Postgres serverless team" }
+    ],
+    "companies": [
+      { "name": "Neon" }
+    ],
+    "dates": [],
+    "relationships": [
+      {
+        "contact": { "name": "Diego Aguilar" },
+        "company": { "name": "Neon" },
+        "role": "Head of Postgres serverless team",
+        "relation": "works_at",
+        "confidence": 0.95,
+        "sourceQuote": "Diego runs the Postgres serverless team at Neon"
+      },
+      {
+        "contact": { "name": "Diego Aguilar" },
+        "relation": "introduced_by",
+        "confidence": 0.95,
+        "sourceQuote": "Lucas, meet Diego Aguilar."
+      }
+    ],
+    "summary": "Sam Alvarez introduced Lucas to Diego Aguilar, who runs Neon's Postgres serverless team and is hiring senior backend engineers."
+  }
+}

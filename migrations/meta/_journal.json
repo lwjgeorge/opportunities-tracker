@@ -22,6 +22,13 @@
       "when": 1780447568194,
       "tag": "0002_round_smiling_tiger",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1780448710558,
+      "tag": "0003_eager_blue_shield",
+      "breakpoints": true
     }
   ]
 }

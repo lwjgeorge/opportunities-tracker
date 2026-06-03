@@ -1,0 +1,46 @@
+{
+  "name": "interview-scheduling",
+  "description": "Hiring manager schedules a first technical screen. Should produce a stage signal toward 'screen' or 'interview' depending on the framing, plus a dated event.",
+  "input": {
+    "sender": "marcus.chen@anthropic.com",
+    "subject": "RE: Staff Engineer interview — Wed 11 June 14:00 UTC?",
+    "bodyText": "Hi Lucas,\n\nThanks for the application — really enjoyed reading your write-up on the consensus protocol piece.\n\nWe'd like to do a 60-min technical screen with one of our staff engineers, Priya Raghavan. Wed 11 June at 14:00 UTC works on her side. Let me know if that lands for you and I'll send a Google Meet link.\n\nFor prep: bring a system you've designed that you're happy to talk through end-to-end. No coding test.\n\nBest,\nMarcus Chen\nHead of Engineering, Anthropic",
+    "sentAt": "2026-06-04T11:22:00Z"
+  },
+  "expected": {
+    "people": [
+      { "name": "Marcus Chen", "email": "marcus.chen@anthropic.com", "company": "Anthropic", "role": "Head of Engineering" },
+      { "name": "Priya Raghavan", "company": "Anthropic", "role": "Staff Engineer" }
+    ],
+    "companies": [
+      { "name": "Anthropic", "domain": "anthropic.com" }
+    ],
+    "dates": [
+      { "iso": "2026-06-11T14:00:00Z", "context": "60-min technical screen at 14:00 UTC" }
+    ],
+    "stageSignal": {
+      "toStage": "screen",
+      "confidence": 0.92,
+      "reason": "'60-min technical screen' is unambiguous — moving from applied to screen stage."
+    },
+    "relationships": [
+      {
+        "contact": { "name": "Marcus Chen", "email": "marcus.chen@anthropic.com" },
+        "company": { "name": "Anthropic" },
+        "role": "Head of Engineering",
+        "relation": "works_at",
+        "confidence": 0.95,
+        "sourceQuote": "Marcus Chen\nHead of Engineering, Anthropic"
+      },
+      {
+        "contact": { "name": "Priya Raghavan" },
+        "company": { "name": "Anthropic" },
+        "role": "Staff Engineer",
+        "relation": "works_at",
+        "confidence": 0.9,
+        "sourceQuote": "one of our staff engineers, Priya Raghavan"
+      }
+    ],
+    "summary": "Anthropic's Head of Engineering Marcus Chen is offering a 60-min technical screen with Staff Engineer Priya Raghavan on 11 June 14:00 UTC."
+  }
+}

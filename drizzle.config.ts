@@ -13,6 +13,7 @@ export default defineConfig({
     "./src/db/schema.ts",
     "./src/db/scrapes-schema.ts",
     "./src/db/oauth-schema.ts",
+    "./src/db/extraction-schema.ts",
   ],
   out: "./migrations",
   dialect: "postgresql",

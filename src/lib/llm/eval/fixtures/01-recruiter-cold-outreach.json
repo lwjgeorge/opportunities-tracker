@@ -1,0 +1,43 @@
+{
+  "name": "recruiter-cold-outreach",
+  "description": "Standard cold outreach from a recruiter at an agency. Should produce a recruited_for relationship and a 'lead' stage signal.",
+  "input": {
+    "sender": "talia@bridge-talent.com",
+    "subject": "Senior Backend role @ Linear — interested?",
+    "bodyText": "Hi Lucas,\n\nI'm Talia from Bridge Talent. We're partnered with Linear (the issue tracker) on a Senior Backend Engineer search. Saw your work on distributed systems and thought it might be a fit — they're remote-friendly within EU timezones, $180–220k base, ~0.1% equity.\n\nIf you're open to a 15-min intro chat next week, here's my calendar: https://cal.com/talia-bridge.\n\nNo pressure if not!\nTalia",
+    "sentAt": "2026-06-01T09:14:00Z"
+  },
+  "expected": {
+    "people": [
+      { "name": "Talia", "email": "talia@bridge-talent.com", "company": "Bridge Talent", "role": "Recruiter" }
+    ],
+    "companies": [
+      { "name": "Bridge Talent", "domain": "bridge-talent.com" },
+      { "name": "Linear" }
+    ],
+    "dates": [],
+    "stageSignal": {
+      "toStage": "lead",
+      "confidence": 0.85,
+      "reason": "Cold outreach about a role; no application submitted yet — pure lead state."
+    },
+    "relationships": [
+      {
+        "contact": { "name": "Talia", "email": "talia@bridge-talent.com" },
+        "company": { "name": "Bridge Talent" },
+        "role": "Recruiter",
+        "relation": "works_at",
+        "confidence": 0.95,
+        "sourceQuote": "I'm Talia from Bridge Talent."
+      },
+      {
+        "contact": { "name": "Talia", "email": "talia@bridge-talent.com" },
+        "company": { "name": "Linear" },
+        "relation": "recruited_for",
+        "confidence": 0.9,
+        "sourceQuote": "We're partnered with Linear ... on a Senior Backend Engineer search."
+      }
+    ],
+    "summary": "Bridge Talent recruiter Talia is sourcing for a Senior Backend Engineer role at Linear and is asking for a 15-min intro call."
+  }
+}

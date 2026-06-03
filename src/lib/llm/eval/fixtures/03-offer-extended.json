@@ -1,0 +1,38 @@
+{
+  "name": "offer-extended",
+  "description": "Formal verbal offer in the body of an email. Strong 'offer' stage signal, with comp details and a deadline.",
+  "input": {
+    "sender": "people@stripe.com",
+    "subject": "Offer: Staff Software Engineer at Stripe",
+    "bodyText": "Lucas,\n\nWe'd be thrilled to have you join Stripe as a Staff Software Engineer. Here's the offer:\n\n- Base: $245,000\n- Equity: 28,000 options vesting over 4 years, 1-year cliff\n- Sign-on bonus: $25,000\n- Start date: 1 August 2026 (flexible)\n\nWe'll send the formal letter through Docusign in the next 24h. Could you let us know by 15 June whether you'd like to proceed?\n\nDelighted to chat through any of it,\nKaren Wu\nDirector of Engineering",
+    "sentAt": "2026-06-10T16:48:00Z"
+  },
+  "expected": {
+    "people": [
+      { "name": "Karen Wu", "email": "people@stripe.com", "company": "Stripe", "role": "Director of Engineering" }
+    ],
+    "companies": [
+      { "name": "Stripe", "domain": "stripe.com" }
+    ],
+    "dates": [
+      { "iso": "2026-08-01T00:00:00Z", "context": "Start date: 1 August 2026 (flexible)" },
+      { "iso": "2026-06-15T00:00:00Z", "context": "Reply deadline: 15 June" }
+    ],
+    "stageSignal": {
+      "toStage": "offer",
+      "confidence": 0.98,
+      "reason": "Email opens with a written offer and lists comp + start date — definitively the offer stage."
+    },
+    "relationships": [
+      {
+        "contact": { "name": "Karen Wu", "email": "people@stripe.com" },
+        "company": { "name": "Stripe" },
+        "role": "Director of Engineering",
+        "relation": "works_at",
+        "confidence": 0.95,
+        "sourceQuote": "Karen Wu\nDirector of Engineering"
+      }
+    ],
+    "summary": "Stripe extended an offer for Staff Software Engineer: $245k base + 28k options + $25k sign-on, start 1 August, reply by 15 June."
+  }
+}

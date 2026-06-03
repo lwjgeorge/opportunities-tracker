@@ -1,0 +1,24 @@
+{
+  "name": "rejection",
+  "description": "Polite rejection email. Should produce a closed_lost stage signal with high confidence and minimal new relationships.",
+  "input": {
+    "sender": "talent@vercel.com",
+    "subject": "Re: Your application — Senior Platform Engineer",
+    "bodyText": "Hi Lucas,\n\nThanks for your interest in the Senior Platform Engineer role at Vercel and for the time you put into the take-home.\n\nAfter careful consideration, we've decided to move forward with another candidate. The bar was extremely high this round and the decision was not easy. We'd love to stay in touch — please feel free to apply again in 6+ months if anything new opens up.\n\nWishing you the best,\nThe Vercel Talent Team",
+    "sentAt": "2026-06-08T17:03:00Z"
+  },
+  "expected": {
+    "people": [],
+    "companies": [
+      { "name": "Vercel", "domain": "vercel.com" }
+    ],
+    "dates": [],
+    "stageSignal": {
+      "toStage": "closed_lost",
+      "confidence": 0.97,
+      "reason": "'We've decided to move forward with another candidate' is an explicit rejection."
+    },
+    "relationships": [],
+    "summary": "Vercel rejected Lucas's Senior Platform Engineer application after the take-home, inviting reapplication in 6+ months."
+  }
+}
