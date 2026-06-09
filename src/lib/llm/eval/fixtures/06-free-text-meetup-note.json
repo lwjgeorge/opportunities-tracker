@@ -1,0 +1,37 @@
+{
+  "name": "free-text-meetup-note",
+  "description": "User-typed note after meeting someone at a meetup. Two people, one company (Stripe), a works_at relationship for Aisha, and an introduced_by hint via Marcus. No stage signal because nothing has been applied for.",
+  "input": {
+    "text": "Met Aisha Khan at the Postgres meetup. She's a staff engineer at Stripe, works on database internals. Got her email aisha@stripe.com. She offered to make an intro to her hiring manager Marcus.",
+    "capturedAt": "2026-06-01T20:00:00Z"
+  },
+  "expected": {
+    "people": [
+      { "name": "Aisha Khan", "email": "aisha@stripe.com", "company": "Stripe", "role": "Staff Engineer" },
+      { "name": "Marcus", "company": "Stripe", "role": "Hiring Manager" }
+    ],
+    "companies": [
+      { "name": "Stripe" }
+    ],
+    "dates": [],
+    "relationships": [
+      {
+        "contact": { "name": "Aisha Khan", "email": "aisha@stripe.com" },
+        "company": { "name": "Stripe" },
+        "role": "Staff Engineer",
+        "relation": "works_at",
+        "confidence": 0.95,
+        "sourceQuote": "She's a staff engineer at Stripe"
+      },
+      {
+        "contact": { "name": "Marcus" },
+        "company": { "name": "Stripe" },
+        "role": "Hiring Manager",
+        "relation": "works_at",
+        "confidence": 0.85,
+        "sourceQuote": "her hiring manager Marcus"
+      }
+    ],
+    "summary": "User met Aisha Khan (staff engineer at Stripe) at a Postgres meetup; she offered an intro to hiring manager Marcus."
+  }
+}

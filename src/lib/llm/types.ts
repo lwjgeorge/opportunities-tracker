@@ -43,7 +43,7 @@ export const RELATION_VALUES = [
 
 export type RelationValue = (typeof RELATION_VALUES)[number];
 
-// --- Input shape ----------------------------------------------------------
+// --- Input shapes ---------------------------------------------------------
 
 export type EmailExtractionInput = {
   sender: string;
@@ -55,6 +55,24 @@ export type EmailExtractionInput = {
    */
   bodyText: string | null;
   sentAt: Date;
+};
+
+/**
+ * Free-text input for the "tell me about this person/company" capture flow.
+ *
+ * The user types a short note (a few sentences, sometimes a paragraph) about
+ * a person they met or a company they're tracking, and we run the same
+ * extraction pipeline as for email — same output shape — so contacts,
+ * companies, and relationships land in the same review surface.
+ *
+ * Providers MUST tolerate a non-empty `text` field; an empty string is a
+ * caller bug and the provider SHOULD throw rather than burn tokens.
+ */
+export type FreeTextExtractionInput = {
+  /** The note as the user typed it. Trimmed by the caller. */
+  text: string;
+  /** When the user captured the note (used as the anchor for relative dates). */
+  capturedAt: Date;
 };
 
 // --- Output shapes (zod-first; TS types are inferred) ---------------------
@@ -137,4 +155,21 @@ export interface LlmExtractor {
    *     `extraction_runs` and continues with the next email)
    */
   extractFromEmail(input: EmailExtractionInput): Promise<EmailExtraction>;
+
+  /**
+   * Extracts structured signals from a free-text note the user typed about
+   * a person, company, or conversation. Reuses {@link EmailExtraction}: the
+   * downstream consumers (capture review UI, persistence) already speak that
+   * shape, so we don't fork the contract.
+   *
+   * `stageSignal` is allowed to remain unset and usually will be — a typed
+   * note has no inbox-derived pipeline movement.
+   *
+   * Implementations MUST:
+   *   - reject empty/whitespace `text` with a descriptive Error before
+   *     calling the upstream API (don't burn tokens on nothing)
+   *   - validate their parsed output against {@link emailExtractionSchema}
+   *   - throw a descriptive Error on protocol failure
+   */
+  extractFromFreeText(input: FreeTextExtractionInput): Promise<EmailExtraction>;
 }

@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 import { createClaudeLlmExtractor } from "../providers/claude";
 import type { LlmExtractor } from "../types";
 
-import { type Fixture, fixtureSchema } from "./fixture-schema";
+import { type Fixture, fixtureSchema, isFreeTextInput } from "./fixture-schema";
 import { type ScoreBreakdown, scoreExtraction } from "./score";
 
 const PASS_THRESHOLD = 0.7; // average overall score must clear this to exit 0
@@ -67,11 +67,17 @@ export async function runEval(
   }[] = [];
 
   for (const fixture of fixtures) {
-    const input = {
-      ...fixture.input,
-      sentAt: new Date(fixture.input.sentAt),
-    };
-    const actual = await extractor.extractFromEmail(input);
+    // Branch on input shape: free-text fixtures (a `text` field) flow through
+    // extractFromFreeText; everything else is an email-shaped fixture.
+    const actual = isFreeTextInput(fixture.input)
+      ? await extractor.extractFromFreeText({
+          text: fixture.input.text,
+          capturedAt: new Date(fixture.input.capturedAt),
+        })
+      : await extractor.extractFromEmail({
+          ...fixture.input,
+          sentAt: new Date(fixture.input.sentAt),
+        });
     const score = scoreExtraction(fixture.expected, actual);
     results.push({
       name: fixture.name,

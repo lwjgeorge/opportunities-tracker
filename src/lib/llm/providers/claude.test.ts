@@ -279,4 +279,68 @@ describe("createClaudeLlmExtractor", () => {
       }),
     ).rejects.toThrow(/ANTHROPIC_API_KEY is not set/);
   });
+
+  // --- Free-text extraction --------------------------------------------------
+
+  it("extractFromFreeText: parses a valid tool_use response and returns the extraction", async () => {
+    const createMock = setupAnthropicMock(VALID);
+    const { createClaudeLlmExtractor } = await import("./claude");
+
+    const extractor = createClaudeLlmExtractor();
+    const result = await extractor.extractFromFreeText({
+      text: "Met Aisha at the Postgres meetup. She works at Stripe.",
+      capturedAt: new Date("2026-06-01T20:00:00Z"),
+    });
+
+    expect(result).toEqual(VALID);
+
+    const args = createMock.mock.calls[0][0] as Record<string, unknown>;
+    // Same tool-forcing contract on both code paths — no free-text fallback.
+    expect(args.tool_choice).toEqual({
+      type: "tool",
+      name: "record_extraction",
+    });
+
+    // System prompt for the free-text path should mention the input mode so
+    // the model is calibrated for "user note" vs "email". A code-level guard
+    // against accidentally dispatching the email prompt on the wrong call.
+    const system = args.system as Array<Record<string, unknown>>;
+    expect(typeof system[0].text).toBe("string");
+    expect(system[0].text as string).toMatch(/note the user typed/i);
+    expect(system[0].cache_control).toEqual({ type: "ephemeral" });
+
+    // User message should carry the captured-at anchor and the verbatim text.
+    const messages = args.messages as Array<{ role: string; content: string }>;
+    expect(messages[0].content).toContain("capturedAt: 2026-06-01T20:00:00");
+    expect(messages[0].content).toContain("Postgres meetup");
+    // It should NOT carry email-shaped metadata that would confuse the model.
+    expect(messages[0].content).not.toContain("sender:");
+    expect(messages[0].content).not.toContain("subject:");
+  });
+
+  it("extractFromFreeText: rejects empty text without calling the SDK", async () => {
+    const createMock = setupAnthropicMock(VALID);
+    const { createClaudeLlmExtractor } = await import("./claude");
+
+    await expect(
+      createClaudeLlmExtractor().extractFromFreeText({
+        text: "   ",
+        capturedAt: new Date(),
+      }),
+    ).rejects.toThrow(/must be non-empty/);
+
+    expect(createMock).not.toHaveBeenCalled();
+  });
+
+  it("extractFromFreeText: surfaces a clear error when the response fails schema validation", async () => {
+    setupAnthropicMock({ people: [{ name: "Aisha" }] });
+    const { createClaudeLlmExtractor } = await import("./claude");
+
+    await expect(
+      createClaudeLlmExtractor().extractFromFreeText({
+        text: "Met Aisha at the meetup.",
+        capturedAt: new Date(),
+      }),
+    ).rejects.toThrow(/schema validation/i);
+  });
 });
