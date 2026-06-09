@@ -5,10 +5,12 @@ import { usePathname } from "next/navigation";
 import {
   Briefcase,
   Building2,
-  Users,
-  Network,
   Mail,
+  MessageSquarePlus,
+  Network,
   Settings,
+  Share2,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -19,11 +21,16 @@ interface NavItem {
   icon: LucideIcon;
 }
 
+// Graph + Capture lead. The graph is the headline browsable view; capture is
+// the quickest way to add to it. Applications stays available but moves down
+// the list — it's no longer the entry point.
 const NAV_ITEMS: NavItem[] = [
-  { href: "/applications", label: "Applications", icon: Briefcase },
+  { href: "/graph", label: "Graph", icon: Share2 },
+  { href: "/capture", label: "Capture", icon: MessageSquarePlus },
   { href: "/companies", label: "Companies", icon: Building2 },
   { href: "/contacts", label: "Contacts", icon: Users },
   { href: "/relationships", label: "Relationships", icon: Network },
+  { href: "/applications", label: "Applications", icon: Briefcase },
   { href: "/email-allowlist", label: "Email allowlist", icon: Mail },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
